@@ -1,0 +1,249 @@
+* {
+    margin: 0;
+    padding: 0;
+    font: 12px Verdana, Arial
+}
+h1{
+	font-size:16px; !important;
+}
+
+code {
+    font-family: "Courier New", Courier
+}
+
+#options {
+    width: 820px;
+    margin: 20px auto;
+    text-align: right;
+    color: #0069b5;
+}
+
+#options a {
+    text-decoration: none;
+    color: #0069b5;
+}
+
+#options a:hover {
+    color: #033
+}
+#acc {
+    width: 820px;
+    list-style: none;
+    color: #033;
+    margin: 0 auto 40px
+}
+#acc h3 {
+    width: 800px;
+    border: 1px solid #9ac1c9;
+    padding: 6px 6px 8px;
+    font-weight: bold;
+    margin-top: 5px;
+    cursor: pointer;
+    background: url(../images/header.png)
+}
+
+#acc h3:hover {
+    background: url(../images/header_over.png);
+	font-weight:bolder;
+}
+.acc-head *{
+	font-size:13px !important;
+	font-weight:800;
+}
+#acc .acc-section {
+    overflow: hidden;
+    background: #fff;
+	font-weight:bolder;
+	
+}
+#acc .acc-content {
+    width: 782px;
+    padding: 15px;
+    border: 1px solid #9ac1c9;
+    border-top: none;
+    background: #fff
+}
+#acc .score {
+    border: 1px solid;
+    display: block;
+    float: right;
+    text-align: center;
+    padding:2px;
+	min-width: 15px;
+	background-color:#ffffff;
+	color:#000000;
+}
+
+#acc .catTitle {
+    float: left;
+}
+.acc-header-section{
+	background: url(../images/header_bkg.png);
+}
+
+.acc-header-section *{
+	font-size:14px !important;
+	font-weight:bolder;	
+	color:#ffffff;
+}
+.comments {
+    width: 800px;
+    border: 1px solid #9ac1c9;
+    padding: 6px 6px 8px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+.thiReportForm{
+	font-size:14px;
+	color:#333333;
+	width:150px;
+	border:solid #777777 1px;
+	margin: 2px;
+    padding: 1px;	
+}
+
+.ui-datepicker-calendar {
+    display: none;
+ }
+ #overlay {
+		background-image:url(../images/transparent.png);
+		color:#0000AA;
+		height:450px;
+}
+	
+/* container for external content. uses vertical scrollbar, if needed */
+div.contentWrap {
+	height:441px;
+	overflow-y:auto;
+}
+/* the overlayed element */
+.apple_overlay {
+	
+	/* initially overlay is hidden */
+	display:none;
+	
+	/* growing background image */
+	background-image:url(../images/white.png);
+	
+	/* 
+		width after the growing animation finishes
+		height is automatically calculated
+	*/
+	width:640px;		
+	
+	/* some padding to layout nested elements nicely  */
+	padding:35px;
+
+	/* a little styling */	
+	font-size:11px;
+}
+
+/* default close button positioned on upper right corner */
+.apple_overlay .close {
+	background-image:url(../images/close.png);
+	position:absolute; right:5px; top:5px;
+	cursor:pointer;
+	height:35px;
+	width:35px;
+}
+
+.criterias {
+	text-align:left;
+	color :#0000DD;	
+	padding:20px;
+}
+.criterias li{
+	line-height:20px;
+	font-family:Verdana;
+	font-size:12px;
+	font-weight:600;	
+	
+}
+.headerRow {
+    background: url("../images/new_table_top2.gif") repeat-x scroll 0 0 transparent;
+    cursor: default;
+}
+.scoreRow td{
+	background: url("../images/new_table_top2.gif") repeat-x scroll 0 0 transparent;
+	font:1.5em bolder;
+	color:#FFFFFF;
+	padding:6px 15px !important;
+}
+.scoreRow a{	
+	color:#FFFFFF;
+	font-weight:bolder;
+	font-size:0.75em
+}
+.scoreRow a:hover{	
+	color:#F7FFD8;	
+	font-size:0.85em
+}
+.scoreRow select{
+	font: 14px bolder;
+    padding: 1px;
+}
+scoreRow a:hover{	
+	color:#FFFFAA;
+	text-decoration:blink;
+}
+.assignmentGroups th{	
+	color: #fff;
+    padding: 7px 15px;
+    text-align: left;
+	font-weight:bolder;
+}
+.assignmentGroups td {
+    border-top: 1px solid #D4E2E9;
+	line-height:20px;
+	padding: 10px 15px;
+	
+}
+
+.assignmentGroups .oddRow {
+    background-color: #EEEEEE;
+}
+.ovrComments{
+	border:1px solid;
+	border-top:0px;
+	margin-top: -15px;
+	padding: 15px 10px;
+}
+
+.ovrComments td {
+    border-top: 1px solid #D4E2E9;
+	line-height:20px;
+	padding: 10px 15px;
+	
+}
+
+.ovrComments .oddRow{
+    background-color: #EEEEEE !important;
+}
+input[type="submit"]{
+	height:25px;
+	min-width:120px;
+}
+
+.modal {
+    background-color: #fff;
+    display: none;
+    width: 350px;
+    padding: 15px;
+    text-align: left;
+    border: 2px solid #333;
+    opacity: 0.8;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-box-shadow: 0 0 50px #ccc;
+    -webkit-box-shadow: 0 0 50px #ccc;
+}
+
+.modal h2 {
+    background: url(/img/global/info.png) 0 50% no-repeat;
+    margin: 0px;
+    padding: 10px 0 10px 45px;
+    border-bottom: 1px solid #333;
+    font-size: 20px;
+}
+
+

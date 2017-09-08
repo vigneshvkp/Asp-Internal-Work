@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:aop="http://www.springframework.org/schema/aop"
+         xmlns:tx="http://www.springframework.org/schema/tx"
+         xmlns:task="http://www.springframework.org/schema/task"
+         xmlns:util="http://www.springframework.org/schema/util"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+           http://www.springframework.org/schema/task
+           http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+    <!-- the parent application context definition for the springapp application -->
+
+    <bean id="customerManager" class="com.aspire.thi.service.CustomerManager">
+        <property name="customerDao" ref="customerDao"/>
+    </bean>
+
+    <bean id="customerDao" class="com.aspire.thi.repository.JdbcCustomerDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="auditorManager" class="com.aspire.thi.service.AuditorManager">
+        <property name="auditorDao" ref="auditorDao"/>
+    </bean>
+
+    <bean id="projectManager" class="com.aspire.thi.service.ProjectManager">
+        <property name="projectDao" ref="projectDao"/>
+    </bean>
+
+    <bean id="projectDao" class="com.aspire.thi.repository.JdbcProjectDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="departmentManager" class="com.aspire.thi.service.DepartmentManager">
+        <property name="departmentDao" ref="departmentDao"/>
+    </bean>
+
+    <bean id="departmentDao" class="com.aspire.thi.repository.JdbcDepartmentDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="productManager" class="com.aspire.thi.service.SimpleProductManager">
+        <property name="productDao" ref="productDao"/>
+    </bean>
+
+    <bean id="productDao" class="com.aspire.thi.repository.JdbcProductDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="auditorDao" class="com.aspire.thi.repository.JdbcAuditorDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+	
+	<bean id="thiReportDao" class="com.aspire.thi.repository.JdbcThiReportDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="authenticationManager" class="com.aspire.thi.service.AuthenticationManager">
+        <property name="auditorDao" ref="auditorDao"/>
+        <property name="projectManager" ref="projectManager"/>
+    </bean>
+
+ 	<bean id="thiScoreManager" class="com.aspire.thi.service.ThiScoreManager">
+        <property name="thiScoreDao" ref="thiScoreDao"/>
+    </bean>
+
+    <bean id="thiScoreDao" class="com.aspire.thi.repository.JdbcThiScoreDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+	
+	<bean id="thiReportManager" class="com.aspire.thi.service.ThiReportManager">
+        <property name="thiReportDao" ref="thiReportDao"/>
+    </bean>
+    
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+
+    <bean id="propertyConfigurer" 
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" 
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+	<bean id="appContext" class= "com.aspire.thi.utils.AppContext" lazy-init="false" >
+		<property name="customerManager" ref="customerManager"/>
+		<property name="projectManager" ref="projectManager"/>
+		<property name="departmentManager" ref="departmentManager"/>
+	</bean>
+	
+	<bean id="util" class= "com.aspire.thi.utils.ScoringUtil" lazy-init="false" >
+		<property name="thiManager" ref="thiScoreManager"/>
+	</bean>
+	
+	<bean id="syncProsDataExecutor" class="com.aspire.thi.common.SyncProsDataExecutor">
+	       <property name="context" ref="appContext"/>
+	</bean>
+	
+	<task:scheduled-tasks scheduler="myScheduler">
+	    <task:scheduled ref="syncProsDataExecutor" method="schedule" cron="0 0 0 * * ?"/>
+	</task:scheduled-tasks>
+	
+	<task:scheduler id="myScheduler" pool-size="5"/>
+
+    <aop:config>
+        <aop:advisor pointcut="execution(* *..ProductManager.*(..))" advice-ref="txAdvice"/>
+    </aop:config>
+
+    <tx:advice id="txAdvice">
+        <tx:attributes>
+            <tx:method name="save*"/>
+            <tx:method name="*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+  
+</beans>

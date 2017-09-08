@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+<taglib>
+	<tlibversion>1.0</tlibversion>
+	<jspversion>1.1</jspversion>
+	<shortname>menu</shortname>
+	<info>renders menu in javascript Tag library</info>
+	<tag>
+		<name>menu</name>
+		<tagclass>com.aspire.thi.web.common.MenuTag</tagclass>
+		<bodycontent>empty</bodycontent>
+		<info>renders menu</info>
+		<attribute>
+			<name>filePath</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>menutype</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>aceNo</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>auditor</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
+		<name>permission</name>
+		<tagclass>com.aspire.thi.web.common.PermissionTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<info>check for permission</info>
+		<attribute>
+			<name>expression</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+</taglib>

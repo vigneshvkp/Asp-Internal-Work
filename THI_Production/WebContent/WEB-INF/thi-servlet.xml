@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- the application context definition for the springapp DispatcherServlet -->
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="messages"/>
+    </bean>
+
+    <bean name="/hello.htm" class="com.aspire.thi.web.InventoryController">
+        <property name="productManager" ref="productManager"/>
+    </bean>
+
+    <bean name="/reload.htm" class="com.aspire.thi.web.ReloadController">
+        <property name="appContext" ref="appContext"/>
+    </bean>
+
+    <!-- bean name="/loadData.htm" class="com.aspire.thi.web.LoadBaseDataController">
+        <property name="appContext" ref="appContext"/>
+    </bean-->
+
+    <bean name="/syncProsData.htm" class="com.aspire.thi.web.SyncProsDataController">
+        <property name="appContext" ref="appContext"/>
+        <property name="fromThread" value="false"/>
+    </bean>
+
+    <!--  bean name="/syncProsDataThread.htm" class="com.aspire.thi.web.SyncProsDataController">
+        <property name="appContext" ref="appContext"/>
+        <property name="fromThread" value="true"/>
+    </bean -->
+
+    <bean name="/login.htm" class="com.aspire.thi.web.LoginController">
+        <property name="commandName" value="loginCredentials"/>
+        <property name="commandClass" value="com.aspire.thi.domain.LoginCredentials"/>
+        <property name="validator">
+        	<bean class="com.aspire.thi.service.LoginValidator"/>
+        </property>
+        <property name="successView" value="loadAssociatedProjects.htm"/>
+        <!-- property name="successView" value="defaulttemplate"/-->
+        <property name="formView" value="login"/>
+        <property name="authenticationManager" ref="authenticationManager"/>
+    </bean>
+
+    <bean name="/logout.htm" class="com.aspire.thi.web.LogoutController"/>
+
+	<bean name="/loadAuditProjects.htm" class="com.aspire.thi.web.LoadAuditProjectsController">
+		<property name="projectManager" ref="projectManager"/>
+	</bean>
+
+	<bean name="/loadAssociatedProjects.htm" class="com.aspire.thi.web.LoadAssociatedProjectsController">
+		<property name="projectManager" ref="projectManager"/>
+	</bean>
+
+	<bean name="/report.htm" class="com.aspire.thi.web.ThiReportController">
+        <property name="thiManager" ref="thiScoreManager"/>		
+    </bean>
+
+	<bean name="/audit.htm" class="com.aspire.thi.web.ThiAuditController">
+        <property name="thiManager" ref="thiScoreManager"/>		
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="projectManager" ref="projectManager"/>
+    </bean>
+    
+    
+	<bean name="/saveAudit.htm" class="com.aspire.thi.web.SaveThiAuditController">
+        <property name="thiManager" ref="thiScoreManager"/>
+		<property name="sessionForm" value="false"/>
+        <property name="commandName" value="thiAudit"/>
+        <property name="commandClass" value="com.aspire.thi.domain.ThiScore"/>
+		<property name="formView" value="thiAudit"/>
+		<property name="successView" value="thiAudit"/>
+		<property name="authenticationManager" ref="authenticationManager"/>
+		<property name="scoringUtil" ref="util"/>
+    </bean>
+	
+	<bean name="/thiAudit.htm" class="com.aspire.thi.web.AuditFormController">
+        <property name="thiManager" ref="thiScoreManager"/>
+		<property name="projectManager" ref="projectManager"/>
+		<property name="authenticationManager" ref="authenticationManager"/>
+		<property name="sessionForm" value="false"/>
+        <property name="commandName" value="auditForm"/>
+        <property name="commandClass" value="com.aspire.thi.domain.ThiScore"/>
+		<property name="formView" value="auditForm"/>
+		<property name="successView" value="redirect:audit.htm"/>
+    </bean>
+	
+	<bean name="/viewCriteria.htm" class="com.aspire.thi.web.AuditCriteriaController">
+        <property name="thiManager" ref="thiScoreManager"/>
+    </bean>
+	
+	<bean name="/thiReport.htm" class="com.aspire.thi.web.AuditFormController">
+        <property name="thiManager" ref="thiScoreManager"/>
+		<property name="projectManager" ref="projectManager"/>
+		<property name="sessionForm" value="false"/>
+        <property name="commandName" value="auditForm"/>
+        <property name="commandClass" value="com.aspire.thi.domain.ThiScore"/>
+		<property name="formView" value="reportForm"/>
+		<property name="successView" value="report.htm"/>
+    </bean>
+	
+	<bean name="/duReport.htm" class="com.aspire.thi.web.DuReportFormController">
+        <property name="thiReportManager" ref="thiReportManager"/>
+		<property name="departmentManager" ref="departmentManager"/>
+		<property name="sessionForm" value="false"/>
+        <property name="commandName" value="duReportForm"/>
+        <property name="commandClass" value="com.aspire.thi.web.DuReportForm"/>
+		<property name="formView" value="duReportForm"/>
+		<property name="successView" value="duReport"/>
+    </bean>
+
+	<bean name="/orgReport.htm" class="com.aspire.thi.web.OrgReportFormController">
+        <property name="thiReportManager" ref="thiReportManager"/>
+		<property name="departmentManager" ref="departmentManager"/>
+		<property name="sessionForm" value="false"/>
+        <property name="commandName" value="orgReportForm"/>
+        <property name="commandClass" value="com.aspire.thi.web.DuReportForm"/>
+		<property name="formView" value="orgReportForm"/>
+		<property name="successView" value="orgReport"/>
+    </bean>
+    <bean name="/priceincrease.htm" class="com.aspire.thi.web.PriceIncreaseFormController">
+        <property name="sessionForm" value="false"/>
+        <property name="commandName" value="priceIncrease"/>
+        <property name="commandClass" value="com.aspire.thi.service.PriceIncrease"/>
+        <property name="validator">
+            <bean class="com.aspire.thi.service.PriceIncreaseValidator"/>
+        </property>
+        <property name="formView" value="priceincrease"/>
+        <property name="successView" value="hello.htm"/>
+        <property name="productManager" ref="productManager"/>
+    </bean>
+
+    <bean name="/listprojects.htm" class="com.aspire.thi.web.ProjectController">
+        <property name="projectManager" ref="projectManager"/>
+		<property name="departmentManager" ref="departmentManager"/>
+    </bean>
+
+    <bean name="/addproject.htm" class="com.aspire.thi.web.ProjectFormController">
+        <property name="sessionForm" value="true"/>
+        <property name="commandName" value="addProject"/>
+        <property name="commandClass" value="com.aspire.thi.domain.Project"/>
+        <property name="successView" value="listprojects.htm"/>
+        <property name="projectManager" ref="projectManager"/>
+        <property name="auditorManager" ref="auditorManager"/>
+        <property name="authenticationManager" ref="authenticationManager"/>
+    </bean>
+
+    <bean name="/projectauditor.htm" class="com.aspire.thi.web.ProjectAuditorController">
+        <property name="sessionForm" value="true"/>
+        <property name="commandName" value="projAuditor"/>
+        <property name="commandClass" value="com.aspire.thi.service.ProjectAuditorHelper"/>
+        <property name="successView" value="projectauditor"/>
+        <property name="projectManager" ref="projectManager"/>
+        <property name="auditorManager" ref="auditorManager"/>
+    </bean>
+	
+	<bean name="/addAuditor.htm" class="com.aspire.thi.web.AuditorController">
+        <property name="sessionForm" value="true"/>
+        <property name="commandName" value="addAuditor"/>
+        <property name="commandClass" value="com.aspire.thi.service.AuditorManager"/>
+        <property name="successView" value="listAuditors.htm"/>
+        <property name="auditorManager" ref="auditorManager"/>
+    </bean>
+
+    <!--   bean name="/projectauditormap.htm" class="com.aspire.thi.web.ProjectAuditorMapController">
+        <property name="sessionForm" value="true"/>
+        <property name="commandName" value="projAuditor"/>
+        <property name="commandClass" value="com.aspire.thi.service.ProjectAuditorHelper"/>
+        <property name="successView" value="projectauditor.htm"/>
+        <property name="projectManager" ref="projectManager"/>
+        <property name="auditorManager" ref="auditorManager"/>
+        <property name="authenticationManager" ref="authenticationManager"/>
+    </bean -->
+
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+     <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>
+     <property name="prefix" value="/WEB-INF/jsp/"></property>
+     <property name="suffix" value=".jsp"></property>
+  </bean>
+
+</beans>

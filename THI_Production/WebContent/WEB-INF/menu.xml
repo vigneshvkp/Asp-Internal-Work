@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE menus [
+  <!ELEMENT menus (menu*)>
+  <!ELEMENT menu    (#PCDATA|menu)*>
+  <!ATTLIST menu url CDATA "#">
+  <!ATTLIST menu title CDATA #REQUIRED>
+  <!ATTLIST menu permission CDATA #IMPLIED>
+]>
+<!-- 
+	title - displayed for the user
+	url - relative to the current context. Don't include context name
+	permission - the permission name should be exactly match with the variable in PermissionConstant.java 
+
+	<menu title="New User"  url="/fieldmgmt/NewUser_input.action"/> permission="NEW_USER" 
+	<menu title="Edit User" url="/fieldmgmt/EditUser_input.action"/>
+
+-->
+<menus>
+	<menu title="Home" url="#" >
+		<menu title="Associated" url="/loadAssociatedProjects.htm" permission="NORMAL_USER " />
+		<menu title="To Audit" url="/loadAuditProjects.htm" permission="AUDITOR" />
+	</menu>
+	<menu title="Manage THI" url="#" permission="QA" >
+		<menu title="Manage Projects" url="/listprojects.htm" permission="QA" />
+		<menu title="Manage Auditors" url="/addAuditor.htm" permission="QA" />
+	</menu>
+	<menu title="Reports" url="#" permission="NORMAL_USER">	
+		<menu title="Project Report" url="/thiReport.htm" permission="NORMAL_USER" />	
+		<menu title="DU Report" url="/duReport.htm" permission="NORMAL_USER" />
+		<menu title="Organization Report" url="/orgReport.htm" permission="NORMAL_USER" />		
+	</menu>		
+	<menu title="Logout" url="/logout.htm" />
+</menus>
