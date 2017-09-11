@@ -48,6 +48,7 @@ public class AuthenticationManager {
 	}
 
 	public boolean authenticate(LoginCredentials loginCredentials){
+		
 		// Checking the LDAP authentication.
 		Hashtable<String, String> env = new Hashtable<String,String>(4);
 		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
