@@ -12,7 +12,28 @@ public class AssesmentGroupScore extends AssesmentGroup {
 	private List<LineItemLog> lineItemLogs;
 
 	private Integer assesmentGroupId;
+	
+	private List<LineItemScore> lineItemScores;
 
+	private String vkp;
+	
+	
+
+	public String getVkp() {
+		return vkp;
+	}
+
+	public void setVkp(String vkp) {
+		this.vkp = vkp;
+	}
+
+	public List<LineItemScore> getLineItemScores() {
+		return lineItemScores;
+	}
+
+	public void setLineItemScores(List<LineItemScore> lineItemScores) {
+		this.lineItemScores = lineItemScores;
+	}
 
 	public void setLineItemLogs(List<LineItemLog> lineItemLogs) {
 		this.lineItemLogs = lineItemLogs;

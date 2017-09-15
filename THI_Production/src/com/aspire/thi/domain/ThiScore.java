@@ -45,6 +45,7 @@ public class ThiScore extends DatabaseObject {
 	
 	private List<String> auditeeNames;
 
+
 	/**
 	 * Gets the audit date.
 	 * 
