@@ -36,7 +36,7 @@
 				var auditdate = document.forms["addprojectForm"]["auditdate"].value;
 				if (auditdate==null || auditdate=="") {
 					document.getElementById("auditDateErrorMsg").style.display = "block";
-					flag = true;
+					//flag = true;
 				} else {
 					var date = new Date(auditdate);
 					if ( Object.prototype.toString.call(date) === "[object Date]" ) {
@@ -44,13 +44,13 @@
 					  if ( isNaN( date.getTime() ) ) {  // d.valueOf() could also work
 					    // date is not valid
 						document.getElementById("auditDateErrorMsg").style.display = "block";
-						flag = true;
+						//flag = true;
 					  }
 					}
 					else {
 					  // not a date
 						document.getElementById("auditDateErrorMsg").style.display = "block";
-						flag = true;
+						//flag = true;
 					}
 				}
 				if(!flag){

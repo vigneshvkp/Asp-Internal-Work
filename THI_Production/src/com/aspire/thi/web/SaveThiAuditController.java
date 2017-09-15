@@ -115,6 +115,9 @@ public class SaveThiAuditController extends SimpleFormController {
 				emailAddress.add(projectOwnerDetail.getEmail());
 */				//Directly retrieve the project owner e-mail
 				String ownerEmail = authenticationManager.getProjectOwnerEmail(audit.getProjectOwnerId());
+				if(ownerEmail == null){
+					ownerEmail="Vignesh.Murugesan@aspiresys.com";
+				}
 				if(ownerEmail.trim().length() > 0 ){
 					emailAddress.add(ownerEmail);
 				}

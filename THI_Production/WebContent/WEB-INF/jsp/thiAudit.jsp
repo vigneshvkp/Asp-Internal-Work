@@ -289,7 +289,8 @@
 																<tr align="center" class="headerRow">
 																	<th width="15%">Criteria</th>
 																	<th width="30%">Description</th>
-																	<th width="35%">Remarks</th>
+																	<th width="30%">Remarks</th>
+																	<th width="25%">Scores</th>
 																</tr>
 																<c:set var="logCount" value="0" />
 																<c:forEach var="lineItemLog" items="${groupScore.lineItemLogs}">
@@ -307,6 +308,19 @@
 																					path="assesmentGroupScores[${groupCount}].lineItemLogs[${logCount}].comments" />
 																			</c:otherwise>
 																		</c:choose></td>
+																		
+																		
+																		<td>
+																		<select class="group_score">
+																				<option value="-1">N/A</option>
+																				<option value="0">0</option>
+																				<option value="1">1</option>
+																				<option value="2">2</option>
+																				<option value="3">3</option>										
+																			</select>
+																		</td>
+																		
+																		
 																	</tr>
 																	<c:set var="logCount" value="${logCount+1}" />
 																</c:forEach>
@@ -314,7 +328,7 @@
 																	<td><a
 																		href="viewCriteria.htm?assesmentGroupId=${groupScore.assesmentGroupId}"
 																		rel="#overlay" class="viewCriteria">View Checklist</a></td>
-																	<td align="right">Score</td>
+																	<td align="right">Group Score</td>
 																	<td><c:choose>
 																		<c:when test="${thiAudit.auditComplete}">
 																			<c:choose>
@@ -327,15 +341,21 @@
 																			</c:choose>
 																		</c:when>
 																		<c:otherwise>
-																			<form:select path="assesmentGroupScores[${groupCount}].score"
-																				cssClass="group_score">
-																				<form:option value="-1">N/A</form:option>
-																				<form:option value="0">0</form:option>
-																				<form:option value="1">1</form:option>
-																				<form:option value="2">2</form:option>
-																				<form:option value="3">3</form:option>										
-																			</form:select>
-																		</c:otherwise>
+																		
+																	<form:input style="width: 50px;" path="assesmentGroupScores[${groupCount}].score" value="1" cssClass="group_score"/> 
+																						<!--	
+																								<form:select
+																									path="assesmentGroupScores[${groupCount}].score"
+																									cssClass="group_score">
+																									<form:option value="-1">N/A</form:option>
+																									<form:option value="0">0</form:option>
+																									<form:option value="1">1</form:option>
+																									<form:option value="2">2</form:option>
+																									<form:option value="3">3</form:option>
+																								</form:select>
+																								-->
+
+																							</c:otherwise>
 																	</c:choose></td>
 																</tr>
 															</table>
