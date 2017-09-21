@@ -98,6 +98,7 @@ public class SaveThiAuditController extends SimpleFormController {
 					audit.setLastModifiedBy(userDetail.getAceNo());
 					thiManager.saveAudit(audit);
 					//thiManager.insertAuditee(audit.getProjectId(), auditees,userDetail.getAceNo());
+					
 				}
 			}
 			//insert the selected auditees acenos to project_auditee_mapping table

@@ -44,7 +44,6 @@
 				}
 			});
 		});
-
 		$("#dialog-modal").dialog({
 			height : 200,
 			modal : true,
@@ -57,7 +56,6 @@
 				}
 			}
 		});
-
 		$("#apple_overlay").dialog("destroy");
 		$("#apple_overlay").dialog({
 			height : 470,
@@ -66,9 +64,7 @@
 			width : 720
 		});
 		initTabs();
-
 	});
-
 	function validateInput() {
 		var isComplete = true;
 		var tabIndex = -1;
@@ -92,7 +88,6 @@
 				return false;
 			}
 		});
-
 		if (!isComplete) {
 			var tabName = $(".tabs li:nth-child(" + (tabIndex + 1) + ")")
 					.text();
@@ -123,7 +118,6 @@
 		}
 		return isComplete;
 	}
-
 	function saveAuditData() {
 		$.ajax({
 			type : "post",
@@ -164,7 +158,6 @@
 				$("#auditComplete").val("true");
 				saveAuditData();
 			} else {
-
 			}
 		});
 		$("#saveAudit").click(function() {
@@ -180,7 +173,6 @@
 			$("#apple_overlay").dialog("open");
 			return false;
 		});
-
 		var timeoutId = 0;
 		$('textarea').keypress(function() {
 			if (timeoutId)
@@ -223,14 +215,62 @@
 			values.push(obj.options[i].innerHTML + "--xx--"
 					+ obj.options[i].value);
 		}
-
 		values = values.sort();
-
 		for (var i = 0; i < values.length; i++) {
 			valueArray = values[i].split('--xx--');
 			obj.options[i].innerHTML = valueArray[0];
 			obj.options[i].value = valueArray[1];
 		}
+	}
+
+	function roundToTwo(num) {    
+	    return +(Math.round(num + "e+2")  + "e-2");
+	}
+	
+	//vkp
+	var groupscore=[0,0,0,0,0,0,0];
+	var de=4,req=3,des=2,cod=3,ut=2,rel=3,usa=1;
+	var grouprow=[4,3,2,3,2,3,5];
+	var calcweight=new Array(7);
+	for (var i = 0; i < 8; i++) {
+		calcweight[i] = new Array(8);
+	}
+
+	for(var i=0;i< 8;i++){
+		for(var j=0;j<8;j++){
+			calcweight[i][j]=0;
+		}
+	}
+	
+	function calcScore(groupCount,logCount) {
+
+		var combo_score = document.getElementById("assesmentGroupScores"+groupCount+".lineItemScores"+logCount+".score");
+		var percentage=document.getElementById("assesmentGroupScores"+groupCount+".weight"+logCount+".percentage");
+		console.log("percentage : "+percentage.value);
+		var wei=(percentage.value/100)/3;
+		console.log("weigh	t : "+wei);
+		console.log("Given score "+combo_score.value);
+		var L=0;
+		var val= wei*(L/(1-L)+1);	
+	
+		if(combo_score.value<0){
+				val=val*0;
+			}
+		else{
+			val=val*combo_score.value;
+			}
+		calcweight[groupCount][logCount]=val;
+		console.log("calc weight "+calcweight[groupCount][logCount]);
+
+		groupscore[groupCount]=0;
+		for(var i=0;i<grouprow[groupCount];i++){
+			groupscore[groupCount]=groupscore[groupCount]+calcweight[groupCount][i];
+		}
+		groupscore[groupCount]=groupscore[groupCount]*3;
+		groupscore[groupCount]=roundToTwo(groupscore[groupCount]);
+		console.log("group score tol "+groupscore[groupCount]);
+		document.getElementById("assesmentGroupScores"+groupCount+".score").value=groupscore[groupCount];
+
 	}
 </script>
 </head>
@@ -315,10 +355,10 @@
 																			<table border="0" class="assignmentGroups"
 																				width="100%" cellpadding="0" cellspacing="0">
 																				<tr align="center" class="headerRow">
-																					<th width="15%">Criteria</th>
+																					<th width="20%">Criteria</th>
 																					<th width="30%">Description</th>
 																					<th width="30%">Remarks</th>
-																					<th width="25%">Scores</th>
+																					<th width="10%">Scores</th>
 																				</tr>
 																				<c:set var="logCount" value="0" />
 																				<c:set var="lineItemCount" value="0" />
@@ -329,22 +369,33 @@
 																						path="assesmentGroupScores[${groupCount}].lineItemLogs[${logCount}].id" />
 																					<form:hidden
 																						path="assesmentGroupScores[${groupCount}].lineItemLogs[${logCount}].lineItemId" />
+																					<form:hidden 
+																						path="assesmentGroupScores[${groupCount}].lineItemScores[${logCount}].ass_line_item_id" />
+																				 	<form:hidden 
+																						path="assesmentGroupScores[${groupCount}].weight[${logCount}].assesment_line_item_id" />
+																					<form:hidden 
+																						path="assesmentGroupScores[${groupCount}].weight[${logCount}].assesment_type_id" />
+																					<form:hidden 
+																						path="assesmentGroupScores[${groupCount}].weight[${logCount}].percentage" />
+																					
 																					<tr>
-																						<td width="20%">${lineItemLog.text}</td>
-																						<td width="40%">${lineItemLog.description}</td>
-																						<td width="40%"><c:choose>
+																						<td>${lineItemLog.text}</td>
+																						<td>${lineItemLog.description}</td>
+																						<td><c:choose>
 																								<c:when test="${thiAudit.auditComplete}">${lineItemLog.comments}</c:when>
 																								<c:otherwise>
-																									<form:textarea cols="60" rows="6"
+																									<form:textarea cols="40" rows="6"
 																										cssClass="lineItemComments"
 																										path="assesmentGroupScores[${groupCount}].lineItemLogs[${logCount}].comments" />
 																								</c:otherwise>
 																							</c:choose></td>
 
-																						<!--  My change vkp assesmentGroupScores[${groupCount}].lineItemScores[${lineItemCount}].percentage-->
-																						<td><form:select
-																								path="assesmentGroupScores[${groupCount}].lineItemScores[${logCount}].percentage"
-																								class="group_score">
+																						<!--  My change vkp assesmentGroupScores[${groupCount}].lineItemScores[${lineItemCount}].percentage
+																						onchange="calcScore(${groupCount}, ${logCount})"
+																						-->
+																						<td ><form:select
+																								path="assesmentGroupScores[${groupCount}].lineItemScores[${logCount}].score"
+																								class="group_score" onchange="calcScore(${groupCount}, ${logCount})" >
 																								<option value="-1">N/A</option>
 																								<option value="0">0</option>
 																								<option value="1">1</option>
@@ -364,8 +415,9 @@
 																						href="viewCriteria.htm?assesmentGroupId=${groupScore.assesmentGroupId}"
 																						rel="#overlay" class="viewCriteria">View
 																							Checklist</a></td>
+																							
 																					<td align="right">Group Score</td>
-																					<td><c:choose>
+																					<td align="left"><c:choose>
 																							<c:when test="${thiAudit.auditComplete}">
 																								<c:choose>
 																									<c:when test="${groupScore.score==-1}">
@@ -378,13 +430,13 @@
 																							</c:when>
 																							<c:otherwise>
 																								<!-- vkp  -->
-																								<form:input style="width: 50px;"
+																								<form:input style="width: 50px; align:left"
 																									path="assesmentGroupScores[${groupCount}].score"
-																									value="1" cssClass="group_score" />
+																									value="0" cssClass="group_score" />
 																								<!--  vkp end -->
 																								<!--	vkp
 																								<form:select
-																									path="assesmentGroupScores[${groupCount}].score"
+																				 					path="assesmentGroupScores[${groupCount}].score"
 																									cssClass="group_score">
 																									<form:option value="-1">N/A</form:option>
 																									<form:option value="0">0</form:option>
@@ -396,6 +448,7 @@
 
 																							</c:otherwise>
 																						</c:choose></td>
+																						<td></td>
 																				</tr>
 																			</table>
 																			<!-- another link. uses the same overlay -->

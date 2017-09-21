@@ -6,8 +6,10 @@ import java.util.List;
 import com.aspire.thi.domain.AssesmentGroupScore;
 import com.aspire.thi.domain.AssesmentType;
 import com.aspire.thi.domain.LineItemLog;
+import com.aspire.thi.domain.LineItemScore;
 import com.aspire.thi.domain.ProjectAuditor;
 import com.aspire.thi.domain.ThiScore;
+import com.aspire.thi.domain.Weitage;
 
 public interface ThiScoreRepository {
 
@@ -28,7 +30,7 @@ public interface ThiScoreRepository {
 	public void updateThiScore(ThiScore score);
 
 	public void insertThiScore(ThiScore score);
-
+	
 	public ProjectAuditor getProjectAuditor(Integer projectId, Date auditCycleDate);
 
 	public List<AssesmentType> getAssesmentTypes();
@@ -44,4 +46,15 @@ public interface ThiScoreRepository {
 	public void insertAuditee(int projectId,String[] auditee,String userAceNo);
 	
 	public List<String> getProjectAuditee(int projectId);
+
+	//vkp
+	public List<LineItemScore> getLineItemScore(Integer assesmentGroupScoreId);
+
+	//vkp
+	public List<LineItemScore> getAssesmentLineItemScore(Integer assignmentType, Integer assesmentGroupId);
+	
+	public List<Weitage> getWeitage(Integer ass_type_id, Integer assesmentGroupId);
+	
+	//vkp
+	public void insertLineItemScore(LineItemScore lineScore,ThiScore score);
 }

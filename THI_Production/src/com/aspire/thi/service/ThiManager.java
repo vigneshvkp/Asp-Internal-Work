@@ -7,6 +7,7 @@ import java.util.List;
 import com.aspire.thi.domain.AssesmentType;
 import com.aspire.thi.domain.ProjectAuditor;
 import com.aspire.thi.domain.ThiScore;
+import com.aspire.thi.domain.Weitage;
 
 public interface ThiManager extends Serializable{
 
@@ -31,4 +32,5 @@ public interface ThiManager extends Serializable{
 	public void insertAuditee(int projectId,String[] auditee,String userAceNo);
 	
 	public List<String> getProjectAuditee(int projectId);
+
 }

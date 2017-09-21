@@ -7,34 +7,43 @@ import java.util.List;
  */
 public class AssesmentGroupScore extends AssesmentGroup {
 
-	private Integer score;
+	//vkp
+	private double score;
 
 	private List<LineItemLog> lineItemLogs;
 
 	private Integer assesmentGroupId;
 	
+	//vkp
 	private List<LineItemScore> lineItemScores;
 
-	private String vkp;
-	
+	private List<Weitage> weight;
 	
 
-	public String getVkp() {
-		return vkp;
+
+	public List<Weitage> getWeight() {
+		return weight;
 	}
 
-	public void setVkp(String vkp) {
-		this.vkp = vkp;
+	public void setWeight(List<Weitage> weight) {
+		this.weight = weight;
 	}
 
 	public List<LineItemScore> getLineItemScores() {
 		return lineItemScores;
 	}
 
+	//vkp
 	public void setLineItemScores(List<LineItemScore> lineItemScores) {
 		this.lineItemScores = lineItemScores;
 	}
 
+	//vkp
+	public void setWeitage(List<Weitage> weights){
+		this.weight=weights;
+		
+	}
+	
 	public void setLineItemLogs(List<LineItemLog> lineItemLogs) {
 		this.lineItemLogs = lineItemLogs;
 	}
@@ -51,11 +60,15 @@ public class AssesmentGroupScore extends AssesmentGroup {
 		return assesmentGroupId;
 	}
 
-	public void setScore(Integer score) {
+	public double getScore() {
+		return score;
+	}
+
+	public void setScore(double score) {
 		this.score = score;
 	}
 
-	public Integer getScore() {
-		return score;
-	}
+
+
+
 }

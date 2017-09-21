@@ -6,6 +6,7 @@ import java.util.List;
 import com.aspire.thi.domain.AssesmentType;
 import com.aspire.thi.domain.ProjectAuditor;
 import com.aspire.thi.domain.ThiScore;
+import com.aspire.thi.domain.Weitage;
 import com.aspire.thi.repository.ThiScoreRepository;
 
 
@@ -77,5 +78,6 @@ public class ThiScoreManager implements ThiManager {
 	public String getAssessmentGroupName(Integer assessmentGroupId) {
 		return thiScoreDao.getAssessmentGroupName(assessmentGroupId);
 	}
+	
 
 }

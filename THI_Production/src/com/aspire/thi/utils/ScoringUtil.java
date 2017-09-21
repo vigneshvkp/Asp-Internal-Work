@@ -7,7 +7,11 @@ import org.apache.log4j.Logger;
 
 import com.aspire.thi.common.ResourceUtility;
 import com.aspire.thi.domain.AssesmentGroupScore;
+import com.aspire.thi.domain.LineItemLog;
+import com.aspire.thi.domain.Weitage;
+import com.aspire.thi.repository.JdbcThiScoreDao;
 import com.aspire.thi.service.ThiManager;
+import com.aspire.thi.service.ThiScoreManager;
 import com.aspire.thi.web.SaveThiAuditController;
 
 /**
@@ -66,6 +70,7 @@ public class ScoringUtil {
 	
 	}
 	
+	
 	/**
 	 * split weightage based on not available scores 
 	 * @param assessmentName
@@ -79,6 +84,7 @@ public class ScoringUtil {
 		
 	}
 	
+	
 	/**
 	 * calculate overall score 
 	 * @param groupScores
@@ -88,20 +94,27 @@ public class ScoringUtil {
 		int maxScore = 3;
 		double totalScore = 0;
 		double score = 0;
+		
+	
 		if (assesmentType.equals(UXP)) {
 			scoringProperties = ResourceUtility.loadPropertiesFromWebPath("/WEB-INF/scoring_uxp.properties");
 		} else {
 			scoringProperties = ResourceUtility.loadPropertiesFromWebPath("/WEB-INF/scoring.properties");
 		}
+		
+		
 		double assessmentWeightage = getNotAvailableAssessmentWeightage(groupScores);
+	
 		for (AssesmentGroupScore groupScore : groupScores) {
 				if (groupScore.getScore() >1 && groupScore.getScore() <= maxScore) {
-					score = groupScore.getScore()*calcualteWeightage(getAssessmentGroupName(groupScore.getAssesmentGroupId()),assessmentWeightage);
+						//score = groupScore.getScore()*calcualteWeightage(getAssessmentGroupName(groupScore.getAssesmentGroupId()),assessmentWeightage);
+					score = groupScore.getScore();
 					totalScore += score;
 				}
 				//if score is 1 , calculate with log 1
 				else if (groupScore.getScore() == 1) {
-					score =getLog(groupScore.getScore())*calcualteWeightage(getAssessmentGroupName(groupScore.getAssesmentGroupId()),assessmentWeightage);
+					//score =getLog(groupScore.getScore())*calcualteWeightage(getAssessmentGroupName(groupScore.getAssesmentGroupId()),assessmentWeightage);
+					score = getLog(groupScore.getScore());
 					totalScore += score;
 				}
 		}
@@ -109,6 +122,18 @@ public class ScoringUtil {
 			return Double.valueOf("0");
 		}
 		return totalScore;
+	}
+	
+	public  double calculateOverallScore1(List<AssesmentGroupScore> groupScores ,Integer assesmentType) {
+		
+		for (AssesmentGroupScore groupScore : groupScores) {
+			for(LineItemLog linelog: groupScore.getLineItemLogs()){
+				int lineitemid=linelog.getLineItemId();
+				
+			}
+		}
+		return assesmentType;
+		
 	}
 	
 	/**
@@ -121,7 +146,8 @@ public class ScoringUtil {
 		
 	}
 	
-	private double getLog(int score){
+	//vkp int to double
+	private double getLog(double d){
 		double log = Math.log10(6.0);
 		return log;
 	}

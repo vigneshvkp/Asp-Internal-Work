@@ -9,6 +9,7 @@ package com.aspire.thi.common;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -18,6 +19,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import com.aspire.thi.domain.AssesmentGroupScore;
+import com.aspire.thi.domain.AssesmentType;
+import com.aspire.thi.domain.Weitage;
+import com.aspire.thi.repository.JdbcThiScoreDao;
 
 /**
  * A utility class to load the resources from classpath and web path.
@@ -106,4 +112,5 @@ public final class ResourceUtility {
 			throw new RuntimeException(e);
 		}
 	}
+	
 }
