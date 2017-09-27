@@ -19,6 +19,7 @@ import com.aspire.thi.domain.AssesmentGroupScore;
 import com.aspire.thi.domain.AssesmentType;
 import com.aspire.thi.domain.LineItemLog;
 import com.aspire.thi.domain.LineItemScore;
+import com.aspire.thi.domain.LineItemWeight;
 import com.aspire.thi.domain.ProjectAuditor;
 import com.aspire.thi.domain.Project;
 import com.aspire.thi.domain.ThiScore;
@@ -389,6 +390,8 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 		}
 		return lineitemscores;
 	}
+	
+
 
 	
 	//vkp
@@ -780,6 +783,78 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 		return auditeeNames;
 
 	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public List<LineItemWeight> getAssessmentScore(Integer assesmentType) {
+
+		StringBuffer assessmentScores = new StringBuffer(3200);
+		assessmentScores.append("select ali.id as id,ali.line_item_text as texts,ag.group_name as groups,ali.assesment_type_id as type,ali.weitage as weitage "
+				+ "from assesment_line_item ali,assesment_group ag "
+				+ "where ali.assesment_group_id=ag.id and ali.assesment_type_id="+ assesmentType+" order by ag.id,ali.id");
+		
+		List<LineItemWeight> assesmentTypsScore = getSimpleJdbcTemplate().query(assessmentScores.toString(),
+				new AssesmentTypeScores());
+		return assesmentTypsScore;
+		
+
+	}
+	
+	private static class AssesmentTypeScores implements ParameterizedRowMapper<LineItemWeight> {
+		@Override
+		public LineItemWeight mapRow(ResultSet rs, int rowNum) throws SQLException {
+			LineItemWeight assesmentTypeRes = new LineItemWeight();
+			assesmentTypeRes.setId(rs.getInt("id"));
+			assesmentTypeRes.setAssessmentGroupName(rs.getString("groups"));
+			assesmentTypeRes.setAssesmentType(rs.getInt("type"));
+			assesmentTypeRes.setLineItemText(rs.getString("texts"));
+			assesmentTypeRes.setWeitage(rs.getInt("weitage"));
+			
+			return assesmentTypeRes;
+		}
+
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public List<LineItemWeight> getAssessmentLists(Integer id, String groupName, Integer assesmentType) {
+		StringBuffer assessment = new StringBuffer(3200);
+		assessment.append("select ali.id as id,ali.line_item_text as texts,ag.group_name as groups,ali.assesment_type_id as type,ali.weitage as weitage "
+				+ "from assesment_line_item ali,assesment_group ag "
+				+ "where ali.assesment_group_id=ag.id and ali.assesment_type_id="+assesmentType+" and ag.group_name='"+groupName+"' "
+				+ "order by ag.id,ali.id");
+		
+		List<LineItemWeight> assesmentLists = getSimpleJdbcTemplate().query(assessment.toString(),
+				new AssesmentTypeLists());
+		return assesmentLists;
+	}
+	
+	private static class AssesmentTypeLists implements ParameterizedRowMapper<LineItemWeight> {
+		@Override
+		public LineItemWeight mapRow(ResultSet rs, int rowNum) throws SQLException {
+			LineItemWeight assesmentTypeRes = new LineItemWeight();
+			assesmentTypeRes.setId(rs.getInt("id"));
+			assesmentTypeRes.setAssessmentGroupName(rs.getString("groups"));
+			assesmentTypeRes.setAssesmentType(rs.getInt("type"));
+			assesmentTypeRes.setLineItemText(rs.getString("texts"));
+			assesmentTypeRes.setWeitage(rs.getInt("weitage"));
+			
+			return assesmentTypeRes;
+		}
+
+	}
+
+	@Override
+	public int updateLineItem(int id, String groupName, Integer assessmentType, Integer percentage) {
+	
+		int count = getSimpleJdbcTemplate().update(
+				"UPDATE assesment_line_item SET weitage = :weight WHERE id=:id",
+				new MapSqlParameterSource().addValue("id", id).addValue("weight", percentage));
+		
+		return count;
+		
+	}
+
 
 
 

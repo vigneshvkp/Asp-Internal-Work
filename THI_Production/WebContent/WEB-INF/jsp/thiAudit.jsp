@@ -229,8 +229,9 @@
 	
 	//vkp
 	var groupscore=[0,0,0,0,0,0,0];
-	var de=4,req=3,des=2,cod=3,ut=2,rel=3,usa=1;
-	var grouprow=[4,3,2,3,2,3,5];
+	//mention the available number of rows in each group here.  // de-dev environment // req- requirement......
+	var de=4,req=3,des=2,cod=5,ut=2,rel=3,usa=1;
+	var grouprow=[de,req,des,cod,ut,rel,usa];
 	var calcweight=new Array(7);
 	for (var i = 0; i < 8; i++) {
 		calcweight[i] = new Array(8);

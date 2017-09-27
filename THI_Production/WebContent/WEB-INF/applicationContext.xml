@@ -114,6 +114,13 @@
 	       <property name="context" ref="appContext"/>
 	</bean>
 	
+	<bean id="lineItemWeight" class="com.aspire.thi.domain.LineItemWeight"/>
+	
+	<bean id="lineItemGroupScore" class="com.aspire.thi.domain.LineItemGroupScore">
+		
+	</bean>
+	
+	
 	<task:scheduled-tasks scheduler="myScheduler">
 	    <task:scheduled ref="syncProsDataExecutor" method="schedule" cron="0 0 0 * * ?"/>
 	</task:scheduled-tasks>

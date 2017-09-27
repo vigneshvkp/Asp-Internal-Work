@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.aspire.thi.domain.AssesmentType;
+import com.aspire.thi.domain.LineItemWeight;
 import com.aspire.thi.domain.ProjectAuditor;
 import com.aspire.thi.domain.ThiScore;
 import com.aspire.thi.domain.Weitage;
@@ -77,6 +78,23 @@ public class ThiScoreManager implements ThiManager {
 	@Override
 	public String getAssessmentGroupName(Integer assessmentGroupId) {
 		return thiScoreDao.getAssessmentGroupName(assessmentGroupId);
+	}
+
+	//vkp
+	@Override
+	public List<LineItemWeight> getLineItemWeitage(int assesmentType) {
+		return this.thiScoreDao.getAssessmentScore(assesmentType);
+	}
+
+	@Override
+	public List<LineItemWeight> getLineItems(int id, String groupName, int assessmentType) {
+		return this.thiScoreDao.getAssessmentLists(id, groupName, assessmentType);
+	}
+
+	@Override
+	public int updateLineItem(int id, String groupName, int assessId, int percentage) {
+		// TODO Auto-generated method stub
+		return this.thiScoreDao.updateLineItem(id, groupName, assessId, percentage);
 	}
 	
 

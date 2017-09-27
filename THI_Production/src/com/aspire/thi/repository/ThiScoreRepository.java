@@ -7,6 +7,7 @@ import com.aspire.thi.domain.AssesmentGroupScore;
 import com.aspire.thi.domain.AssesmentType;
 import com.aspire.thi.domain.LineItemLog;
 import com.aspire.thi.domain.LineItemScore;
+import com.aspire.thi.domain.LineItemWeight;
 import com.aspire.thi.domain.ProjectAuditor;
 import com.aspire.thi.domain.ThiScore;
 import com.aspire.thi.domain.Weitage;
@@ -57,4 +58,11 @@ public interface ThiScoreRepository {
 	
 	//vkp
 	public void insertLineItemScore(LineItemScore lineScore,ThiScore score);
+	
+	//vkp 
+	public List<LineItemWeight> getAssessmentScore(Integer assessmentType);
+	
+	public List<LineItemWeight> getAssessmentLists(Integer id,String groupName,Integer assessmentType);
+	
+	public int updateLineItem(int id,String groupName,Integer assessmentType,Integer percentage);
 }

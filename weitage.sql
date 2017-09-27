@@ -21,33 +21,33 @@ USE `thi_prod_bug`;
 DROP TABLE IF EXISTS `weitage`;
 CREATE TABLE IF NOT EXISTS `weitage` (
   `id` int(10) unsigned NOT NULL,
-  `line_item` varchar(100) DEFAULT NULL,
-  `percentage` integer DEFAULT NULL
+  `assesment_line_item_id` int(3) unsigned NOT NULL,
+  `percentage` integer DEFAULT NULL,
+   KEY `FK_ass_line_item_id` (`assesment_line_item_id`),
+   CONSTRAINT `FK_ass_line_item_id` FOREIGN KEY (`assesment_line_item_id`) REFERENCES `assesment_line_item` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Dumping data for table thi_prod_bug.weitage: ~20 rows (approximately)
 /*!40000 ALTER TABLE `weitage` DISABLE KEYS */;
 INSERT INTO `weitage` (`id`,`line_item`, `percentage`) VALUES
-	(1,'Development Environment', 35),
-	(2,'QA environment', 25),
-	(3,'UAT Environment', 10),
-	(4,'Code Synchronization with target repository', 30),
-	(5,'Technical and Non functional Requirements', 35),
-	(6,'Requirement Analysis', 30),
-	(7,'Impact Analysis', 35),
-	(8,'Technical Design (HLD or LLD)', 50),
-	(9,'Database Design', 50),
-	(10,'Server Code Quality\r\n', 20),
-	(11,'Client Code Quality\r\n', 20),
-	(12,'DB Scripts Quality\r\n', 20),
-	(13,'Automated Code Analysis (Server & Client)\r\n', 20),
-	(14,'Design Adherence\r\n', 20),
-	(15,'Automated Unit test classes\r\n', 40),
-	(16,'Functional Unit test case for the implemented feat\r\n', 60),
-	(17,'Build procedure\r\n', 25),
-	(18,'Deployment procedure for all environments\r\n', 25),
-	(19,'Code Release & merge\r\n', 50),
-	(20,'Recommended practices for project\r\n', 10);
+	(1,2, 35),
+	(2,3, 25),
+	(3,4, 10),
+	(4,5, 30),
+	(5,6, 35),
+	(6,7, 30),
+	(7,8, 35),
+	(8,9, 50),
+	(9,10, 50),
+	(10,11, 20),
+	(11,12, 20),
+	(12,13, 20),
+	(13,14, 40),
+	(14,15, 60),
+	(15,16, 50),
+	(16,17, 25),
+	(17,18, 25),
+	(18,19, 100);
 /*!40000 ALTER TABLE `weitage` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

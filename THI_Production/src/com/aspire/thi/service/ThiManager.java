@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.aspire.thi.domain.AssesmentType;
+import com.aspire.thi.domain.LineItemWeight;
 import com.aspire.thi.domain.ProjectAuditor;
 import com.aspire.thi.domain.ThiScore;
 import com.aspire.thi.domain.Weitage;
@@ -32,5 +33,11 @@ public interface ThiManager extends Serializable{
 	public void insertAuditee(int projectId,String[] auditee,String userAceNo);
 	
 	public List<String> getProjectAuditee(int projectId);
+	
+	public List<LineItemWeight> getLineItemWeitage(int assesmentType);
+	
+	public List<LineItemWeight> getLineItems(int id,String groupName,int assessId);
+	
+	public int updateLineItem(int id,String groupName,int assessId,int percentage);
 
 }

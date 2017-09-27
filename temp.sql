@@ -301,18 +301,27 @@ DROP TABLE IF EXISTS `thi_line_item_score`;
 
 create table thi_line_item_score(
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` int(10) unsigned NOT NULL,
-  `assesment_group_id` int(10) unsigned NOT NULL,
-  `assesment_type_id` int(10) unsigned NOT NULL,
-  `score` decimal(10,0) NOT NULL,
+  `thi_score_id` int(10) unsigned NOT NULL,
+  `assesment_line_item_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK_thi_line_item_score_project` (`project_id`),
-  KEY `FK_thi_line_item_score_ass_group_id` (`assesment_group_id`),
-  KEY `FK_thi_line_item_score_ass_type_id` (`assesment_type_id`),
-  CONSTRAINT `FK_thi_line_item_score_project` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `FK_thi_line_item_score_ass_group_id` FOREIGN KEY (`assesment_group_id`)  REFERENCES `assesment_group` (`id`),
-  CONSTRAINT `FK_thi_line_item_score_ass_type_id` FOREIGN KEY (`assesment_type_id`) REFERENCES `assesment_type` (`id`) ON UPDATE CASCADE
+  KEY `FK_thi_line_item_log_thi_score` (`thi_score_id`),
+  KEY `FK_thi_line_item_score_assesment_line_item` (`assesment_line_item_id`),
+  CONSTRAINT `FK_thi_line_item_log_thi_score` FOREIGN KEY (`thi_score_id`) REFERENCES `thi_score` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `FK_thi_line_item_score_assesment_line_item` FOREIGN KEY (`assesment_line_item_id`) REFERENCES `assesment_line_item` (`id`) ON UPDATE CASCADE,
 )
+
+CREATE TABLE `thi_line_item_score` (
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`thi_score_id` int(10) unsigned NOT NULL,
+	`assesment_line_item_id` int(10) unsigned NOT NULL,
+	`score` int(10) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	KEY `FK_thi_line_item_score_thi_score` (`thi_score_id`),
+	KEY `FK_thi_line_item_score_assesment_line_item` (`assesment_line_item_id`), 
+	CONSTRAINT `FK_thi_line_item_score_thi_score` FOREIGN KEY (`thi_score_id`) REFERENCES `thi_score` (`id`) ON UPDATE CASCADE,
+	CONSTRAINT `FK_thi_line_item_score_assesment_line_item` FOREIGN KEY (`assesment_line_item_id`) REFERENCES `assesment_line_item` (`id`) ON UPDATE CASCADE
+);
+
 
 
 

@@ -75,7 +75,7 @@
 		<property name="authenticationManager" ref="authenticationManager"/>
 		<property name="scoringUtil" ref="util"/>
     </bean>
-	
+    
 	<bean name="/thiAudit.htm" class="com.aspire.thi.web.AuditFormController">
         <property name="thiManager" ref="thiScoreManager"/>
 		<property name="projectManager" ref="projectManager"/>
@@ -163,7 +163,30 @@
         <property name="successView" value="listAuditors.htm"/>
         <property name="auditorManager" ref="auditorManager"/>
     </bean>
+    
+    <bean name="/lineitempriority.htm" class="com.aspire.thi.web.LineItemPriorityController">
+    	<property name="thiManager" ref="thiScoreManager"/>	
+    	<property name="sessionForm" value="true"/>
+    	<property name="commandName" value="lineItemWeight"/>
+    	<property name="commandClass" value="com.aspire.thi.domain.LineItemWeight"/>
+    	<property name="lineItemWeight" ref="lineItemWeight"/>
+    </bean>
 
+
+    <bean name="/editLineItem.htm" class="com.aspire.thi.web.editLineItemController">
+    	<property name="thiManager" ref="thiScoreManager"/>	
+    	<property name="commandName" value="lineItemGroupScore"/>
+    	<property name="commandClass" value="com.aspire.thi.domain.LineItemGroupScore"/>
+    	<property name="lineItemGroupScore" ref="lineItemGroupScore"/>
+    </bean>
+    
+    <bean name="/saveLineItemGroup.htm" class="com.aspire.thi.web.SaveLineItemGroupController">
+    	<property name="thiManager" ref="thiScoreManager"/>
+    	<property name="sessionForm" value="true"/>
+    	<property name="commandName" value="lineItemGroupScore"/>
+    	<property name="commandClass" value="com.aspire.thi.domain.LineItemGroupScore"/>
+    	
+   	</bean>
     <!--   bean name="/projectauditormap.htm" class="com.aspire.thi.web.ProjectAuditorMapController">
         <property name="sessionForm" value="true"/>
         <property name="commandName" value="projAuditor"/>
