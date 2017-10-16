@@ -7,11 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.aspire.thi.common.ResourceUtility;
 import com.aspire.thi.domain.AssesmentGroupScore;
-import com.aspire.thi.domain.LineItemLog;
-import com.aspire.thi.domain.Weitage;
-import com.aspire.thi.repository.JdbcThiScoreDao;
 import com.aspire.thi.service.ThiManager;
-import com.aspire.thi.service.ThiScoreManager;
 import com.aspire.thi.web.SaveThiAuditController;
 
 /**
@@ -25,6 +21,7 @@ public class ScoringUtil {
     private  ThiManager thiManager;
     private Properties scoringProperties;
     private final Integer UXP = 3;
+    private final Integer DEV = 1;
 	public  void setThiManager(ThiManager thiManager) {
 		this.thiManager = thiManager;
 	}
@@ -70,7 +67,6 @@ public class ScoringUtil {
 	
 	}
 	
-	
 	/**
 	 * split weightage based on not available scores 
 	 * @param assessmentName
@@ -84,7 +80,6 @@ public class ScoringUtil {
 		
 	}
 	
-	
 	/**
 	 * calculate overall score 
 	 * @param groupScores
@@ -94,27 +89,20 @@ public class ScoringUtil {
 		int maxScore = 3;
 		double totalScore = 0;
 		double score = 0;
-		
-	
 		if (assesmentType.equals(UXP)) {
 			scoringProperties = ResourceUtility.loadPropertiesFromWebPath("/WEB-INF/scoring_uxp.properties");
-		} else {
+		}else{
 			scoringProperties = ResourceUtility.loadPropertiesFromWebPath("/WEB-INF/scoring.properties");
 		}
-		
-		
 		double assessmentWeightage = getNotAvailableAssessmentWeightage(groupScores);
-	
 		for (AssesmentGroupScore groupScore : groupScores) {
 				if (groupScore.getScore() >1 && groupScore.getScore() <= maxScore) {
-						//score = groupScore.getScore()*calcualteWeightage(getAssessmentGroupName(groupScore.getAssesmentGroupId()),assessmentWeightage);
-					score = groupScore.getScore();
+					score = groupScore.getScore()*calcualteWeightage(getAssessmentGroupName(groupScore.getAssesmentGroupId()),assessmentWeightage);
 					totalScore += score;
 				}
 				//if score is 1 , calculate with log 1
 				else if (groupScore.getScore() == 1) {
-					//score =getLog(groupScore.getScore())*calcualteWeightage(getAssessmentGroupName(groupScore.getAssesmentGroupId()),assessmentWeightage);
-					score = getLog(groupScore.getScore());
+					score =getLog(groupScore.getScore())*calcualteWeightage(getAssessmentGroupName(groupScore.getAssesmentGroupId()),assessmentWeightage);
 					totalScore += score;
 				}
 		}
@@ -122,18 +110,6 @@ public class ScoringUtil {
 			return Double.valueOf("0");
 		}
 		return totalScore;
-	}
-	
-	public  double calculateOverallScore1(List<AssesmentGroupScore> groupScores ,Integer assesmentType) {
-		
-		for (AssesmentGroupScore groupScore : groupScores) {
-			for(LineItemLog linelog: groupScore.getLineItemLogs()){
-				int lineitemid=linelog.getLineItemId();
-				
-			}
-		}
-		return assesmentType;
-		
 	}
 	
 	/**
@@ -146,9 +122,27 @@ public class ScoringUtil {
 		
 	}
 	
-	//vkp int to double
-	private double getLog(double d){
+	private double getLog(double score){
 		double log = Math.log10(6.0);
 		return log;
 	}
+	
+	public double getWeitage(String assessmentName){
+		
+		double assessmentWeightage = 0;
+		scoringProperties = ResourceUtility.loadPropertiesFromWebPath("/WEB-INF/scoring_LI.properties");
+
+		try{
+			if (scoringProperties.containsKey(assessmentName)) {
+				assessmentWeightage =Double.parseDouble(scoringProperties.getProperty(assessmentName));
+			} 
+		}catch(NullPointerException nullPointerException){
+			logger.info(nullPointerException.getMessage());
+		}catch(Exception exception){
+			logger.info(exception.getMessage());
+		}
+		return assessmentWeightage;
+	}
+	
+	
 }

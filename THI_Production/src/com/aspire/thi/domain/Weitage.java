@@ -1,6 +1,6 @@
 package com.aspire.thi.domain;
 
-//vkp
+// to store the individual wheitage for each line item, send along with logs vkp
 public class Weitage {
 
 	private int assesment_line_item_id;

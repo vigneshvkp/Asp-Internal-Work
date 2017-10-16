@@ -13,7 +13,8 @@
            http://www.springframework.org/schema/tx 
            http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
            http://www.springframework.org/schema/task
-           http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+           http://www.springframework.org/schema/task/spring-task-3.0.xsd
+           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
     <!-- the parent application context definition for the springapp application -->
 
@@ -69,9 +70,12 @@
  	<bean id="thiScoreManager" class="com.aspire.thi.service.ThiScoreManager">
         <property name="thiScoreDao" ref="thiScoreDao"/>
     </bean>
+    
+<util:properties id="properties" location="/WEB-INF/scoring_percentage.properties" />
 
     <bean id="thiScoreDao" class="com.aspire.thi.repository.JdbcThiScoreDao">
         <property name="dataSource" ref="dataSource"/>
+        <property name="scoreproperties" ref="properties"/>
     </bean>
 	
 	<bean id="thiReportManager" class="com.aspire.thi.service.ThiReportManager">

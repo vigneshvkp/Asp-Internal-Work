@@ -165,17 +165,26 @@ public class THIPdfReportCreator {
 				builder.append("<table width='100%' border='0.5' cellpadding='5' style='font-size:8px;'>");
 				builder.append("<tr bgcolor='#E7E7E7' style='font-size:9px;'><th align='center'>Criteria</th>");
 				builder.append("<th align='center'>Description</th>");
-				builder.append("<th align='center'>Remarks</th></tr>");
+				builder.append("<th align='center'>Remarks</th>");
+				builder.append("<th align='center'>Score</th></tr>");
 				for (LineItemLog lineItemLog : lineItemLogs) {
 					builder.append("<tr>");
 					builder.append("<td width='20%'>");
 					builder.append(lineItemLog.getText());
 					builder.append("</td>");
-					builder.append("<td width='40%'>");
+					builder.append("<td width='35%'>");
 					builder.append(lineItemLog.getDescription());
 					builder.append("</td>");
-					builder.append("<td width='40%'>");
+					builder.append("<td width='35%'>");
 					builder.append(lineItemLog.getComments());
+					builder.append("</td>");
+					builder.append("<td width='10%'>");
+					if(lineItemLog.getScore()>=0){
+						builder.append(lineItemLog.getScore());
+					}
+					else{
+						builder.append("N/A");
+					}
 					builder.append("</td>");
 					builder.append("</tr>");
 				}

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="/WEB-INF/jsp/include.jsp"%>
+<%@page import="java.util.Hashtable"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.LinkedHashMap"%>
+<%@page import="com.aspire.thi.domain.ThiScore" %>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
@@ -8,6 +12,7 @@
 <%@ include file="/WEB-INF/jsp/head.html"%>
 <script>
 	$(function() {
+		
 		$(".projectDet tr:even").css({
 			background : "#FFFEEF"
 		});
@@ -64,6 +69,13 @@
 			width : 720
 		});
 		initTabs();
+
+		for(var i=0;i< 8;i++){
+			for(var j=0;j<8;j++){
+				calcWeight(i,j);
+			}
+		}
+		
 	});
 	function validateInput() {
 		var isComplete = true;
@@ -226,11 +238,16 @@
 	function roundToTwo(num) {    
 	    return +(Math.round(num + "e+2")  + "e-2");
 	}
+
+
+
+	
+
 	
 	//vkp
 	var groupscore=[0,0,0,0,0,0,0];
 	//mention the available number of rows in each group here.  // de-dev environment // req- requirement......
-	var de=4,req=3,des=2,cod=5,ut=2,rel=3,usa=1;
+	var de=8,req=8,des=8,cod=8,ut=8,rel=8,usa=8;
 	var grouprow=[de,req,des,cod,ut,rel,usa];
 	var calcweight=new Array(7);
 	for (var i = 0; i < 8; i++) {
@@ -242,15 +259,12 @@
 			calcweight[i][j]=0;
 		}
 	}
-	
-	function calcScore(groupCount,logCount) {
 
-		var combo_score = document.getElementById("assesmentGroupScores"+groupCount+".lineItemScores"+logCount+".score");
-		var percentage=document.getElementById("assesmentGroupScores"+groupCount+".weight"+logCount+".percentage");
-		console.log("percentage : "+percentage.value);
-		var wei=(percentage.value/100)/3;
-		console.log("weigh	t : "+wei);
-		console.log("Given score "+combo_score.value);
+
+	function calcWeight(groupCount,logCount){
+		var combo_score = document.getElementById("assesmentGroupScores"+groupCount+".lineItemLogs"+logCount+".score");
+		var percentage=document.getElementById("assesmentGroupScores"+groupCount+".lineItemLogs"+logCount+".percentage");
+		var wei=(percentage.value)/3;
 		var L=0;
 		var val= wei*(L/(1-L)+1);	
 	
@@ -261,7 +275,13 @@
 			val=val*combo_score.value;
 			}
 		calcweight[groupCount][logCount]=val;
-		console.log("calc weight "+calcweight[groupCount][logCount]);
+		
+	}
+
+	function calcScore(groupCount,logCount) {
+
+	
+		calcWeight(groupCount,logCount);
 
 		groupscore[groupCount]=0;
 		for(var i=0;i<grouprow[groupCount];i++){
@@ -269,7 +289,6 @@
 		}
 		groupscore[groupCount]=groupscore[groupCount]*3;
 		groupscore[groupCount]=roundToTwo(groupscore[groupCount]);
-		console.log("group score tol "+groupscore[groupCount]);
 		document.getElementById("assesmentGroupScores"+groupCount+".score").value=groupscore[groupCount];
 
 	}
@@ -341,6 +360,7 @@
 																	<c:forEach var="groupScore"
 																		items="${thiAudit.assesmentGroupScores}">
 																		<li><a class="current" href="#${groupScore.name}">${groupScore.name}</a></li>
+																		
 																	</c:forEach>
 																</ul>
 																<c:set var="groupCount" value="0" />
@@ -352,6 +372,20 @@
 																		path="assesmentGroupScores[${groupCount}].id" />
 																	<!-- tab "panes" -->
 																	<div class="panes">
+																	
+	    <%
+            // Avoid Java Code in JSP - This is only for ease of testing
+            Map<Integer, String> dropValue = new LinkedHashMap<Integer, String>();
+            dropValue.put(-1, "N/A");
+            dropValue.put(0, "0");
+            dropValue.put(1, "1");
+            dropValue.put(2, "2");
+            dropValue.put(3, "3");
+            
+        
+            // put the hashmap as pageContext attribute
+            pageContext.setAttribute("map", dropValue);
+        %>
 																		<div style="display: block;" class="assignment_groups">
 																			<table border="0" class="assignmentGroups"
 																				width="100%" cellpadding="0" cellspacing="0">
@@ -359,7 +393,7 @@
 																					<th width="20%">Criteria</th>
 																					<th width="30%">Description</th>
 																					<th width="30%">Remarks</th>
-																					<th width="10%">Scores</th>
+																					<th width="10%">Score</th>
 																				</tr>
 																				<c:set var="logCount" value="0" />
 																				<c:set var="lineItemCount" value="0" />
@@ -370,16 +404,11 @@
 																						path="assesmentGroupScores[${groupCount}].lineItemLogs[${logCount}].id" />
 																					<form:hidden
 																						path="assesmentGroupScores[${groupCount}].lineItemLogs[${logCount}].lineItemId" />
-																					<form:hidden 
-																						path="assesmentGroupScores[${groupCount}].lineItemScores[${logCount}].ass_line_item_id" />
-																				 	<form:hidden 
-																						path="assesmentGroupScores[${groupCount}].weight[${logCount}].assesment_line_item_id" />
-																					<form:hidden 
-																						path="assesmentGroupScores[${groupCount}].weight[${logCount}].assesment_type_id" />
-																					<form:hidden 
-																						path="assesmentGroupScores[${groupCount}].weight[${logCount}].percentage" />
-																					
+ 																					<form:hidden 
+																						path="assesmentGroupScores[${groupCount}].lineItemLogs[${logCount}].percentage" />
 																					<tr>
+																					<form:hidden path="assesmentGroupScores[${groupCount}].lineItemLogs[${logCount}].text" />
+																					
 																						<td>${lineItemLog.text}</td>
 																						<td>${lineItemLog.description}</td>
 																						<td><c:choose>
@@ -394,15 +423,37 @@
 																						<!--  My change vkp assesmentGroupScores[${groupCount}].lineItemScores[${lineItemCount}].percentage
 																						onchange="calcScore(${groupCount}, ${logCount})"
 																						-->
-																						<td ><form:select
-																								path="assesmentGroupScores[${groupCount}].lineItemScores[${logCount}].score"
-																								class="group_score" onchange="calcScore(${groupCount}, ${logCount})" >
-																								<option value="-1">N/A</option>
-																								<option value="0">0</option>
-																								<option value="1">1</option>
-																								<option value="2">2</option>
-																								<option value="3">3</option>
-																							</form:select></td>
+																						<td>
+																						<c:set var="itemv" value="${lineItemLog.score}" />
+																						<form:select 
+																								path="assesmentGroupScores[${groupCount}].lineItemLogs[${logCount}].score"
+																								class="group_score" onchange="calcScore(${groupCount}, ${logCount})">
+																															
+																							<% int nv=-1;
+																							try{
+																							 nv =  (Integer)pageContext.getAttribute("itemv");
+																							}catch(Exception e){}
+																							 System.out.println("val==="+nv);
+																							 String sv=""+nv;
+																							%>
+																							
+ 											 												<% for(int count=0; count<dropValue.size(); count++){ %>
+    																							<option value="<%= count-1 %>" 
+																										<%= dropValue.get(count-1).equals(sv)?"selected":"" %>
+																										
+																										>
+																										<%= dropValue.get(count-1)%>
+																								</option>  
+																							<%} %>  
+																													
+																								    
+																								 
+																							</form:select>
+																							</td>
+																							
+																					 
+																						
+																							 
 
 																						<!--  My change vkp end -->
 
@@ -433,7 +484,7 @@
 																								<!-- vkp  -->
 																								<form:input style="width: 50px; align:left"
 																									path="assesmentGroupScores[${groupCount}].score"
-																									value="0" cssClass="group_score" />
+																									cssClass="group_score" readonly="true" />
 																								<!--  vkp end -->
 																								<!--	vkp
 																								<form:select

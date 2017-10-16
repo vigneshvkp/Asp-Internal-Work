@@ -80,7 +80,7 @@ public class ThiScoreManager implements ThiManager {
 		return thiScoreDao.getAssessmentGroupName(assessmentGroupId);
 	}
 
-	//vkp
+	/* weitage from db
 	@Override
 	public List<LineItemWeight> getLineItemWeitage(int assesmentType) {
 		return this.thiScoreDao.getAssessmentScore(assesmentType);
@@ -91,11 +91,12 @@ public class ThiScoreManager implements ThiManager {
 		return this.thiScoreDao.getAssessmentLists(id, groupName, assessmentType);
 	}
 
+	// setting tab vkp
 	@Override
 	public int updateLineItem(int id, String groupName, int assessId, int percentage) {
 		// TODO Auto-generated method stub
 		return this.thiScoreDao.updateLineItem(id, groupName, assessId, percentage);
-	}
+	}*/
 	
 
 }

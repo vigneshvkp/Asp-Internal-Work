@@ -20,10 +20,6 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.aspire.thi.domain.AssesmentGroupScore;
-import com.aspire.thi.domain.AssesmentType;
-import com.aspire.thi.domain.Weitage;
-import com.aspire.thi.repository.JdbcThiScoreDao;
 
 /**
  * A utility class to load the resources from classpath and web path.

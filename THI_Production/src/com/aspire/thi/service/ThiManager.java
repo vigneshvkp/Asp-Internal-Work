@@ -34,10 +34,11 @@ public interface ThiManager extends Serializable{
 	
 	public List<String> getProjectAuditee(int projectId);
 	
+	/* weitage from db
 	public List<LineItemWeight> getLineItemWeitage(int assesmentType);
 	
 	public List<LineItemWeight> getLineItems(int id,String groupName,int assessId);
-	
-	public int updateLineItem(int id,String groupName,int assessId,int percentage);
+	// setting tab vkp
+	public int updateLineItem(int id,String groupName,int assessId,int percentage); */
 
 }

@@ -2,8 +2,10 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
   <!-- the application context definition for the springapp DispatcherServlet -->
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
@@ -164,6 +166,7 @@
         <property name="auditorManager" ref="auditorManager"/>
     </bean>
     
+    <!-- setting tab
     <bean name="/lineitempriority.htm" class="com.aspire.thi.web.LineItemPriorityController">
     	<property name="thiManager" ref="thiScoreManager"/>	
     	<property name="sessionForm" value="true"/>
@@ -183,10 +186,13 @@
     <bean name="/saveLineItemGroup.htm" class="com.aspire.thi.web.SaveLineItemGroupController">
     	<property name="thiManager" ref="thiScoreManager"/>
     	<property name="sessionForm" value="true"/>
+    	<property name="successView" value="lineitempriority.htm"/>
     	<property name="commandName" value="lineItemGroupScore"/>
     	<property name="commandClass" value="com.aspire.thi.domain.LineItemGroupScore"/>
     	
    	</bean>
+   	
+   -->
     <!--   bean name="/projectauditormap.htm" class="com.aspire.thi.web.ProjectAuditorMapController">
         <property name="sessionForm" value="true"/>
         <property name="commandName" value="projAuditor"/>
@@ -196,6 +202,7 @@
         <property name="auditorManager" ref="auditorManager"/>
         <property name="authenticationManager" ref="authenticationManager"/>
     </bean -->
+
 
   <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
      <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>

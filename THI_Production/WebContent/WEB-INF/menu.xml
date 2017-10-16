@@ -30,7 +30,4 @@
 		<menu title="Organization Report" url="/orgReport.htm" permission="NORMAL_USER" />		
 	</menu>		
 	<menu title="Logout" url="/logout.htm" />
-	<menu title="setting" url="#" permission="QA">
-		<menu title="Line Item Percentage" url="/lineitempriority.htm" permission="QA"/>
-	</menu>
 </menus>

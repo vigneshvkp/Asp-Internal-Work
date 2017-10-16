@@ -2,12 +2,16 @@ package com.aspire.thi.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -18,7 +22,6 @@ import org.springframework.util.CollectionUtils;
 import com.aspire.thi.domain.AssesmentGroupScore;
 import com.aspire.thi.domain.AssesmentType;
 import com.aspire.thi.domain.LineItemLog;
-import com.aspire.thi.domain.LineItemScore;
 import com.aspire.thi.domain.LineItemWeight;
 import com.aspire.thi.domain.ProjectAuditor;
 import com.aspire.thi.domain.Project;
@@ -30,6 +33,9 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 
 	/** Logger for this class and subclasses */
 	protected final Log logger = LogFactory.getLog(getClass());
+	
+	
+	private Properties scoreproperties;
 
 	private static class ThiScoreMapper implements ParameterizedRowMapper<ThiScore> {
 		@Override
@@ -60,7 +66,7 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 			score.setAssesmentGroupId(rs.getInt("assesment_group_id"));
 			score.setDescription(rs.getString("description"));
 			score.setName(rs.getString("group_name"));
-			score.setScore(rs.getInt("score"));
+			score.setScore(rs.getDouble("score"));
 			return score;
 		}
 	}
@@ -87,16 +93,6 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 		}
 	}
 
-	// vkp
-	private static class LineItemMapperScore implements ParameterizedRowMapper<LineItemScore> {
-		@Override
-		public LineItemScore mapRow(ResultSet rs, int rowNum) throws SQLException {
-			LineItemScore lineScore = new LineItemScore();
-			lineScore.setAss_line_item_id(rs.getInt("assessment_line_item_id"));
-			return lineScore;
-		}
-	}
-
 	private static class LineItemLogMapper implements ParameterizedRowMapper<LineItemLog> {
 		@Override
 		public LineItemLog mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -106,37 +102,11 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 			lineItem.setText(rs.getString("line_item_text"));
 			lineItem.setComments(rs.getString("comments"));
 			lineItem.setLineItemId(rs.getInt("line_item_id"));
+			lineItem.setScore(rs.getInt("score"));
 			return lineItem; // two2
 		}
 	}
 
-	// vkp
-	private static class LineItemScoreMapper implements ParameterizedRowMapper<LineItemScore> {
-		@Override
-		public LineItemScore mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-			LineItemScore lineItem = new LineItemScore();
-			lineItem.setAss_line_item_id(rs.getInt("assessment_line_item_id"));
-
-			try {
-				if ((rs.getInt("thi_score")) > 0) {
-					lineItem.setThi_score_id(rs.getInt("thi_score_id"));
-				}
-			} catch (Exception e) {
-				System.out.println("thi scoreid not found");
-			}
-
-			try {
-				if ((rs.getDouble("score")) > 0) {
-					lineItem.setScore(rs.getDouble("score"));
-				}
-			} catch (Exception e) {
-				System.out.println("score not found");
-			}
-
-			return lineItem;
-		}
-	}
 
 	private static class ProjectAuditorMapper implements ParameterizedRowMapper<ProjectAuditor> {
 		@Override
@@ -163,37 +133,46 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public List<AssesmentGroupScore> getAssesmentGroupScores(Integer thiScoreId) {
-		@SuppressWarnings("deprecation")
+		
+		
+		String assessmentName= getAssesmentName(getAssesmentIdByThiId(thiScoreId));
 		List<AssesmentGroupScore> assesmentGroupScores = getSimpleJdbcTemplate().query(
 				"SELECT gscore.id AS id, agroup.id AS assesment_group_id, score, group_name, description FROM thi_group_score gscore INNER JOIN assesment_group agroup ON gscore.assessment_group_id = agroup.id WHERE thi_score_id = ?",
 				new AssesmentGroupScoreMapper(), thiScoreId);
+		
+		//List<AssesmentGroupScore> assesmentGroupScoresUpdated=null;
+		
+		for (AssesmentGroupScore groupScore : assesmentGroupScores) {
+			// score and logs added with group score vkp
+			groupScore.setLineItemLogs(this.getLineItemLogs(groupScore.getId()));
+			List<LineItemLog> updatedlineItemsList = new ArrayList<LineItemLog>();
+			for (LineItemLog lineItemLog : groupScore.getLineItemLogs()) {
+				String key = assessmentName+"."+groupScore.getName()+"."+lineItemLog.getText();
+				key=key.replaceAll(" ", "").toLowerCase();
+			//	System.out.println("key= "+key +" Value= "+scoreproperties.getProperty(key));
+				lineItemLog.setPercentage(scoreproperties.getProperty(key));
+				updatedlineItemsList.add(lineItemLog);
+			}
+			groupScore.setLineItemLogs(updatedlineItemsList);			
+			
+		}
+		
 		return assesmentGroupScores;
+		
 	}
 
+	//read line item log and score while starting ..vkp
 	@Override
-	public List<LineItemLog> getLineItemLogs(Integer assesmentGroupScoreId) { // two2
+	public List<LineItemLog> getLineItemLogs(Integer assesmentGroupScoreId) { 
 		@SuppressWarnings("deprecation")
 		List<LineItemLog> itemLogs = getSimpleJdbcTemplate().query(
-				"SELECT itemLog.id as id, lineItem.id AS line_item_id, comments, line_item_description, line_item_text FROM thi_line_item_log itemLog INNER JOIN assesment_line_item lineItem ON itemLog.assesment_line_item_id = lineItem.id WHERE thi_group_score_id = ?",
+				"SELECT itemLog.id as id,lineItem.id AS line_item_id, comments, line_item_description, line_item_text, itemLog.score FROM thi_line_item_log itemLog INNER JOIN assesment_line_item lineItem ON itemLog.assesment_line_item_id = lineItem.id WHERE thi_group_score_id = ?",
 				new LineItemLogMapper(), assesmentGroupScoreId);
-		return itemLogs; // called two
-	}
 
-	// vkp change
-	@Override
-	public List<LineItemScore> getLineItemScore(Integer assesmentGroupScoreId) {
-		@SuppressWarnings("deprecation")
-		List<LineItemScore> itemScore = getSimpleJdbcTemplate().query(
-				"select tlis.thi_score_id as thi_score_id, tlis.assesment_line_item_id as assesment_line_item_id,tlis.score as score from thi_line_item_score tlis INNER JOIN thi_score ts ON ts.id=tlis.thi_score_id where tlis.thi_score_id=?;",
-				new LineItemScoreMapper(), assesmentGroupScoreId);
-		if (itemScore.size() <= 0) {
-			for (int i = 0; i < 10; i++) {
-				itemScore.add(new LineItemScore());
-			}
-		}
-		return itemScore;
+		return itemLogs; // called two
 	}
 
 	public List<String> getAuditeeByProjectScoreId(int scoreId) {
@@ -229,7 +208,7 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 
 		}
 		auditCycleDate = DateUtils.setDays(auditCycleDate, 1);
-		System.out.println(auditCycleDate.toString());
+		//System.out.println(auditCycleDate.toString());
 		Date startsOn = auditCycleDate;
 		Date endsOn = null;
 		if (proj != null) {
@@ -271,9 +250,18 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 			thiScore.setAssesmentGroupScores(this.getAssesmentGroupScores(thiScore.getId()));
 			if (CollectionUtils.isEmpty(thiScore.getAssesmentGroupScores()) == Boolean.FALSE) {
 				for (AssesmentGroupScore groupScore : thiScore.getAssesmentGroupScores()) {
-					groupScore.setLineItemLogs(this.getLineItemLogs(groupScore.getId()));
-					// vkp
-					groupScore.setLineItemScores(this.getLineItemScore(groupScore.getId()));
+					
+					// score and logs added with group score vkp
+						groupScore.setLineItemLogs(this.getLineItemLogs(groupScore.getId()));
+						List<LineItemLog> updatedlineItemsList = new ArrayList<LineItemLog>();
+						for (LineItemLog lineItemLog : groupScore.getLineItemLogs()) {
+							String key = getAssesmentName(thiScore.getAssesmentType())+"."+groupScore.getName()+"."+lineItemLog.getText();
+							key=key.replaceAll(" ", "").toLowerCase();
+							//System.out.println("key= "+key +" Value= "+scoreproperties.getProperty(key));
+							lineItemLog.setPercentage(scoreproperties.getProperty(key));
+							updatedlineItemsList.add(lineItemLog);
+						}
+						groupScore.setLineItemLogs(updatedlineItemsList);			
 				}
 			}
 		} catch (EmptyResultDataAccessException e) {
@@ -309,7 +297,7 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 
 		}
 		auditCycleDate = DateUtils.setDays(auditCycleDate, 1);
-		System.out.println(auditCycleDate.toString());
+		//System.out.println(auditCycleDate.toString());
 		Date startsOn = auditCycleDate;
 		Date endsOn = null;
 		if (proj != null) {
@@ -348,8 +336,22 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 					sb.toString(), new ThiScoreMapper(), new Object[] { projectId, beginDate, completionDate });
 			thiScore.setAssesmentGroupScores(this.getAssesmentGroupScores(thiScore.getId()));
 			if (CollectionUtils.isEmpty(thiScore.getAssesmentGroupScores()) == Boolean.FALSE) {
+				String assessmentName = getAssesmentName(assignmentTypeId);
 				for (AssesmentGroupScore groupScore : thiScore.getAssesmentGroupScores()) {
 					groupScore.setLineItemLogs(this.getLineItemLogs(groupScore.getId()));
+					
+					groupScore.setLineItemLogs(this.getLineItemLogs(groupScore.getId()));
+					List<LineItemLog> updatedlineItemsList = new ArrayList<LineItemLog>();
+					for (LineItemLog lineItemLog : groupScore.getLineItemLogs()) {
+						String key = assessmentName+"."+groupScore.getName()+"."+lineItemLog.getText();
+						key=key.replaceAll(" ", "").toLowerCase();
+//						System.out.println("key= "+key +" Value= "+scoreproperties.getProperty(key));
+						lineItemLog.setPercentage(scoreproperties.getProperty(key));
+						updatedlineItemsList.add(lineItemLog);
+					}
+					groupScore.setLineItemLogs(updatedlineItemsList);
+					
+					
 				}
 			}
 		} catch (EmptyResultDataAccessException e) {
@@ -376,66 +378,65 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 		return itemLogs; // called one
 	}
 
-	// vkp
-	@SuppressWarnings("deprecation")
-	@Override
-	public List<LineItemScore> getAssesmentLineItemScore(Integer assignmentType, Integer assesmentGroupId) {
-		List<LineItemScore> lineitemscores = getSimpleJdbcTemplate().query(
-				"SELECT id as assessment_line_item_id FROM assesment_line_item WHERE assesment_type_id = ? AND assesment_group_id = ?",
-				new LineItemMapperScore(), assignmentType, assesmentGroupId);
-		if (lineitemscores.size() <= 0) {
-			for (int i = 0; i < 10; i++) {
-				lineitemscores.add(new LineItemScore());
-			}
-		}
-		return lineitemscores;
-	}
-	
-
-
-	
-	//vkp
-		private static class weitageMapper implements ParameterizedRowMapper<Weitage> {
-			@Override
-			public Weitage mapRow(ResultSet rs, int rowNum) throws SQLException {
-				Weitage weitage = new Weitage();
-				weitage.setAssesment_line_item_id(rs.getInt("id"));
-				weitage.setPercentage(rs.getInt("percentage"));
-				weitage.setAssesment_type_id(rs.getInt("ass_type_id"));
-				return weitage;
-			}
-		}
-
-		//vkp
-		@Override
-		@SuppressWarnings("deprecation")
-		public List<Weitage> getWeitage(Integer assignmentType, Integer assesmentGroupId) {
-			// TODO Auto-generated method stub
-			List<Weitage> weight = getSimpleJdbcTemplate().query(
-					"SELECT id as id, assesment_type_id as ass_type_id, weitage as percentage FROM assesment_line_item WHERE assesment_type_id = ? AND assesment_group_id = ?",
-					new weitageMapper(), assignmentType, assesmentGroupId );
-			return weight;
-
-		}
-		
 	@Override
 	public ThiScore getAuditScore(Integer assignmentType) {
 		ThiScore auditData = new ThiScore();
+		String assessmentName = getAssesmentName(assignmentType);
 		auditData.setAssesmentType(assignmentType);
 		auditData.setAssesmentGroupScores(getAssesmentGroups(assignmentType));
 		if (CollectionUtils.isEmpty(auditData.getAssesmentGroupScores()) == Boolean.FALSE) {
 			for (AssesmentGroupScore groupScore : auditData.getAssesmentGroupScores()) {
-				groupScore
-						.setLineItemLogs(this.getAssesmentLineItems(assignmentType, groupScore.getAssesmentGroupId()));
-				// vkp change
-				groupScore.setLineItemScores(
-						this.getAssesmentLineItemScore(assignmentType, groupScore.getAssesmentGroupId()));
+				// score and logs added with group score vkp
+				List<LineItemLog> lineItemsList =this.getAssesmentLineItems(assignmentType, groupScore.getAssesmentGroupId());
+				List<LineItemLog> updatedlineItemsList = new ArrayList<LineItemLog>();
+				for (Iterator iterator = lineItemsList.iterator(); iterator.hasNext();) {
+					LineItemLog lineItemLog = (LineItemLog) iterator.next();
+					String key = assessmentName+"."+groupScore.getName()+"."+lineItemLog.getText();
+					key=key.replaceAll(" ", "").toLowerCase();
+//					System.out.println("key= "+key +" Value= "+scoreproperties.getProperty(key));
+					lineItemLog.setPercentage(scoreproperties.getProperty(key));
+					updatedlineItemsList.add(lineItemLog);
+				}
+				groupScore.setLineItemLogs(updatedlineItemsList);			
 				
-				groupScore.setWeitage(this.getWeitage(assignmentType, groupScore.getAssesmentGroupId()));
 			}
 		}
 		return auditData;
 	}
+	
+	public String getAssesmentName(Integer assesmentID){
+		StringBuffer sbAuditFreq = new StringBuffer(3200);
+		sbAuditFreq.append("SELECT name ");
+		sbAuditFreq.append(" FROM assesment_type");
+		sbAuditFreq.append(" WHERE id = ?");
+		String name = null;
+		
+		try {
+			name = getSimpleJdbcTemplate().queryForObject(sbAuditFreq.toString(), String.class,
+					new Object[] { assesmentID });
+		} catch (EmptyResultDataAccessException e) {
+
+		}
+		return name;
+	}
+	
+	public Integer getAssesmentIdByThiId(Integer ThiId){
+		StringBuffer sbAuditFreq = new StringBuffer(3200);
+		sbAuditFreq.append("SELECT assesment_type_id ");
+		sbAuditFreq.append(" FROM thi_score");
+		sbAuditFreq.append(" WHERE id = ?");
+		Integer name = null;
+		
+		try {
+			name = Integer.parseInt(getSimpleJdbcTemplate().queryForObject(sbAuditFreq.toString(), String.class,
+					new Object[] { ThiId }));
+		} catch (EmptyResultDataAccessException e) {
+
+		}
+		return name;
+	}
+	
+	
 
 	@Override
 	@SuppressWarnings("deprecation")
@@ -520,6 +521,14 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 				new MapSqlParameterSource().addValue("score", groupScore.getScore())
 						.addValue("last_modified_by", groupScore.getLastModifiedBy())
 						.addValue("id", groupScore.getId()));
+		
+		for(LineItemLog lineitemlog: groupScore.getLineItemLogs()){
+			getSimpleJdbcTemplate().update(
+					"UPDATE thi_line_item_log SET score = :score WHERE id = :id",
+					new MapSqlParameterSource().addValue("score", lineitemlog.getScore())
+							.addValue("id", lineitemlog.getId()));
+		}
+		
 	}
 
 	private void saveLineItemLogs(AssesmentGroupScore groupScore) {
@@ -598,34 +607,11 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 				"last_modified_by", "last_modified_on");
 		insert.usingGeneratedKeyColumns("id");
 
-		Integer groupScoreId = insert.executeAndReturnKey(parameters).intValue();
-		groupScore.setId(groupScoreId);
+		Double groupScoreId = insert.executeAndReturnKey(parameters).doubleValue();
+		groupScore.setId(groupScoreId.intValue());
+		// calling the function to store the logs and seperate score vkp
 		createLineItemLogs(groupScore, thisScore);
-		// vkp
-		createLineItemScore(groupScore, thisScore);
-	}
 
-	// vkp
-	public void createLineItemScore(AssesmentGroupScore groupScore, ThiScore thiScore) {
-		for (LineItemScore lineScore : groupScore.getLineItemScores()) {
-			insertLineItemScore(lineScore, thiScore);
-
-		}
-	}
-
-	// vkp
-	public void insertLineItemScore(LineItemScore lineScore,ThiScore score) {
-		MapSqlParameterSource parameters = new MapSqlParameterSource();
-		parameters.addValue("score", lineScore.getScore());
-		parameters.addValue("thi_score_id", score.getId());
-		parameters.addValue("assesment_line_item_id", lineScore.getAss_line_item_id());
-		
-		SimpleJdbcInsert insert = new SimpleJdbcInsert(getJdbcTemplate());
-		insert.withTableName("thi_line_item_score");
-		insert.usingColumns("thi_score_id","assesment_line_item_id","score");
-		insert.usingGeneratedKeyColumns("id");
-		Integer lineItemId = insert.executeAndReturnKey(parameters).intValue();
-		lineScore.setId(lineItemId);
 	}
 
 	private void createLineItemLogs(AssesmentGroupScore groupScore, ThiScore thiScore) {
@@ -642,6 +628,7 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 		parameters.addValue("thi_score_id", score.getId());
 		parameters.addValue("assesment_line_item_id", lineItemLog.getLineItemId());
 		parameters.addValue("comments", lineItemLog.getComments());
+		parameters.addValue("score", lineItemLog.getScore());
 		parameters.addValue("created_by", score.getCreatedBy());
 		parameters.addValue("created_on", new Date());
 		parameters.addValue("last_modified_by", score.getLastModifiedBy());
@@ -650,7 +637,7 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 		SimpleJdbcInsert insert = new SimpleJdbcInsert(getJdbcTemplate());
 
 		insert.withTableName("thi_line_item_log");
-		insert.usingColumns("thi_group_score_id", "thi_score_id", "assesment_line_item_id", "comments", "created_by",
+		insert.usingColumns("thi_group_score_id", "thi_score_id", "assesment_line_item_id", "comments", "score", "created_by",
 				"created_on", "last_modified_by", "last_modified_on");
 		insert.usingGeneratedKeyColumns("id");
 
@@ -783,13 +770,13 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 		return auditeeNames;
 
 	}
-
+/* To read weitage from tbl
 	@SuppressWarnings("deprecation")
 	@Override
 	public List<LineItemWeight> getAssessmentScore(Integer assesmentType) {
 
 		StringBuffer assessmentScores = new StringBuffer(3200);
-		assessmentScores.append("select ali.id as id,ali.line_item_text as texts,ag.group_name as groups,ali.assesment_type_id as type,ali.weitage as weitage "
+		assessmentScores.append("select ali.id as id,ali.line_item_text as texts,ag.group_name as groups,ali.assesment_type_id as type,ali.percentage as percentage "
 				+ "from assesment_line_item ali,assesment_group ag "
 				+ "where ali.assesment_group_id=ag.id and ali.assesment_type_id="+ assesmentType+" order by ag.id,ali.id");
 		
@@ -808,18 +795,18 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 			assesmentTypeRes.setAssessmentGroupName(rs.getString("groups"));
 			assesmentTypeRes.setAssesmentType(rs.getInt("type"));
 			assesmentTypeRes.setLineItemText(rs.getString("texts"));
-			assesmentTypeRes.setWeitage(rs.getInt("weitage"));
+			assesmentTypeRes.setWeitage(rs.getInt("percentage"));
 			
 			return assesmentTypeRes;
 		}
-
 	}
+	
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public List<LineItemWeight> getAssessmentLists(Integer id, String groupName, Integer assesmentType) {
 		StringBuffer assessment = new StringBuffer(3200);
-		assessment.append("select ali.id as id,ali.line_item_text as texts,ag.group_name as groups,ali.assesment_type_id as type,ali.weitage as weitage "
+		assessment.append("select ali.id as id,ali.line_item_text as texts,ag.group_name as groups,ali.assesment_type_id as type,ali.percentage as percentage "
 				+ "from assesment_line_item ali,assesment_group ag "
 				+ "where ali.assesment_group_id=ag.id and ali.assesment_type_id="+assesmentType+" and ag.group_name='"+groupName+"' "
 				+ "order by ag.id,ali.id");
@@ -837,23 +824,33 @@ public class JdbcThiScoreDao extends SimpleJdbcDaoSupport implements ThiScoreRep
 			assesmentTypeRes.setAssessmentGroupName(rs.getString("groups"));
 			assesmentTypeRes.setAssesmentType(rs.getInt("type"));
 			assesmentTypeRes.setLineItemText(rs.getString("texts"));
-			assesmentTypeRes.setWeitage(rs.getInt("weitage"));
+			assesmentTypeRes.setWeitage(rs.getInt("percentage"));
 			
 			return assesmentTypeRes;
 		}
 
 	}
+*/
+	public Properties getScoreproperties() {
+		return scoreproperties;
+	}
 
+	public void setScoreproperties(Properties scoreproperties) {
+		this.scoreproperties = scoreproperties;
+	}
+
+	/* setting updating vkp
 	@Override
 	public int updateLineItem(int id, String groupName, Integer assessmentType, Integer percentage) {
 	
 		int count = getSimpleJdbcTemplate().update(
-				"UPDATE assesment_line_item SET weitage = :weight WHERE id=:id",
+				"UPDATE assesment_line_item SET percentage = :weight WHERE id=:id",
 				new MapSqlParameterSource().addValue("id", id).addValue("weight", percentage));
 		
 		return count;
 		
 	}
+	*/
 
 
 

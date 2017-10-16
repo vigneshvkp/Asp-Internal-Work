@@ -55,14 +55,16 @@
 							<table border="0" class="catagory" cellpadding=0 cellspacing=0 border=0 width="100%">
 								<tr bgcolor="#bdcdd9" align="center" class="headingblack">
 			                        <th width="20%">Criteria</th>
-			                        <th width="40%">Description</th>
-			                        <th width="40%">Remarks</th>                           
+			                        <th width="35%">Description</th>
+			                        <th width="35%">Remarks</th> 
+			                        <th width="10%">Score</th>                          
 			                    </tr>														
 								<c:forEach var="lineItemLog" items="${groupScore.lineItemLogs}">
 								<tr>
-									<td width="30%" class="lineItemHeading">${lineItemLog.text}</td>
-									<td width="40%">${lineItemLog.description}</td>
-									<td width="40%">${lineItemLog.comments}</td>
+									<td width="20%" class="lineItemHeading">${lineItemLog.text}</td>
+									<td width="35%">${lineItemLog.description}</td>
+									<td width="35%">${lineItemLog.comments}</td>
+									<td width="10%">${(lineItemLog.score>=0) ?  lineItemLog.score: "N/A"}</td>
 								</tr>
 								</c:forEach>							
 							</table>
